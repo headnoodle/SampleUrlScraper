@@ -1,8 +1,10 @@
-﻿namespace UrlScraper.Shared.Models
+﻿using System;
+
+namespace UrlScraper.Shared.Models
 {
     public class QueueUrlScrapeResult
     {
-        public int Token { get; set; }
+        public Guid Token { get; set; }
         public string  data { get; set; }
     }
 }

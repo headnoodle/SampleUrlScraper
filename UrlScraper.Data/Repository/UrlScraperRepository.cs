@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using UrlScraper.Data.Models;
@@ -20,30 +21,30 @@ namespace UrlScraper.Data.Repository
                     select request).ToList();
         }
 
-        public int AddNewScraperRequest(string urlToScrape)
+        public Guid AddNewScraperRequest(string urlToScrape)
         {
 
-            var scrapeRequest = new ScrapeRequest() { Url = urlToScrape};
+            var scrapeRequest = new ScrapeRequest() { Url = urlToScrape, Token = Guid.NewGuid()};
             _dbContext.Add(scrapeRequest);
             _dbContext.SaveChanges();
-            return scrapeRequest.ScrapeRequestId;
+            return scrapeRequest.Token;
 
         }
 
-        public ScrapeResult GetScraperResultForRequestId(int requestId)
+        public ScrapeResult GetScraperResultForToken(Guid token)
         {
-            return (from result in _dbContext.ScrapeRequestResults
-                    where result.ScrapeRequestId == requestId
-                    select result)
+            return (from request in _dbContext.ScrapeRequests
+                    where request.Token== token 
+                    select request.ScrapeResult)
                 .FirstOrDefault();
         }
 
-        public bool AddScrapeResult(int requestId, string data)
+        public bool AddScrapeResult(Guid token, string data)
         {
 
             var scrapeRequest = (
                 from request in _dbContext.ScrapeRequests
-                where request.ScrapeRequestId == requestId
+                where request.Token == token
                 select request)
                 .Include(b => b.ScrapeResult)
                 .FirstOrDefault();

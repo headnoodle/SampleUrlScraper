@@ -40,7 +40,7 @@ namespace UrlScraper.Api.Controllers
             {
                 if (IsUrlValid(urlToScrape))
                 {
-                    int requestToken = SaveRequestToStore(urlToScrape);
+                    Guid requestToken = SaveRequestToStore(urlToScrape);
 
                     if (await SendToQueue(urlToScrape, requestToken, cancellationToken))
                         return new StandardResponse<RequestUrlScrapeResponse>() { Successful = true, Payload = new RequestUrlScrapeResponse() {Token = requestToken } };
@@ -68,7 +68,7 @@ namespace UrlScraper.Api.Controllers
                 var requests = _urlScraperRepository.GetAllRequests()
                     .Select(r => new RegisteredScrapeStatusResponse()
                     {
-                        Token = r.ScrapeRequestId,
+                        Token = r.Token,
                         Url = r.Url,
                         Processed = r.Processed
                     });
@@ -84,11 +84,11 @@ namespace UrlScraper.Api.Controllers
         }
 
         [HttpGet("GetCompletedScrape")]
-        public StandardResponse<UrlScrapeResultResponse> GetCompletedScrapeResult(int token)
+        public StandardResponse<UrlScrapeResultResponse> GetCompletedScrapeResult(Guid token)
         {
             try
             {
-                var successfulScrape = _urlScraperRepository.GetScraperResultForRequestId(token);
+                var successfulScrape = _urlScraperRepository.GetScraperResultForToken(token);
 
                 if (successfulScrape != null)
                     return new StandardResponse<UrlScrapeResultResponse>(){ Successful  = true, Payload = new UrlScrapeResultResponse(){ScrapeResults = successfulScrape.ResultData, Token = successfulScrape.ScrapeRequestId}};
@@ -103,7 +103,7 @@ namespace UrlScraper.Api.Controllers
 
         }
 
-        private async Task<bool> SendToQueue(string url, int requestToken, CancellationToken cancellationToken)
+        private async Task<bool> SendToQueue(string url, Guid requestToken, CancellationToken cancellationToken)
         {
             var urlScrapeRequest = new QueueUrlScrapeRequest() { Url = url, Token = requestToken};
             var urlScrapeRequestJson = JsonSerializer.Serialize(urlScrapeRequest);
@@ -112,7 +112,7 @@ namespace UrlScraper.Api.Controllers
             return  await requestQueue.SendMessageAsync(urlScrapeRequestJson, cancellationToken);
         }
 
-        private int SaveRequestToStore(string urlToScrape)
+        private Guid SaveRequestToStore(string urlToScrape)
         {
             return _urlScraperRepository.AddNewScraperRequest(urlToScrape);
         }

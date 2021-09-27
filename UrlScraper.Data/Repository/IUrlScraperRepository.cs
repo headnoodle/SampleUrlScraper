@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UrlScraper.Data.Models;
 
 namespace UrlScraper.Data.Repository
@@ -6,8 +7,8 @@ namespace UrlScraper.Data.Repository
     public interface IUrlScraperRepository
     {
         IEnumerable<ScrapeRequest> GetAllRequests();
-        int AddNewScraperRequest(string urlToScrape);
-        ScrapeResult GetScraperResultForRequestId(int requestId);
-        bool AddScrapeResult(int requestId, string data);
+        Guid AddNewScraperRequest(string urlToScrape);
+        ScrapeResult GetScraperResultForToken(Guid token);
+        bool AddScrapeResult(Guid token, string data);
     }
 }

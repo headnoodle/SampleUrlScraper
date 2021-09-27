@@ -16,12 +16,24 @@ namespace UrlScraper.Data
             return new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
         }
 
-        public DbSet<ScrapeRequest> ScrapeRequests { get; set; }
-        public DbSet<ScrapeResult> ScrapeRequestResults { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer();
         }
+
+
+        public DbSet<ScrapeRequest> ScrapeRequests { get; set; }
+        public DbSet<ScrapeResult> ScrapeRequestResults { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ScrapeRequest>()
+                .HasIndex(b => b.Token)
+                .IsUnique();
+        }
+
+
     }
 }
