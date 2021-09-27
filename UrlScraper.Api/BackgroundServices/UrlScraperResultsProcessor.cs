@@ -8,7 +8,6 @@ using Amazon.SQS.Model;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using UrlScraper.Data.Repository;
-using UrlScraper.Shared;
 using UrlScraper.Shared.Models;
 using UrlScraper.Shared.SqsQueue;
 

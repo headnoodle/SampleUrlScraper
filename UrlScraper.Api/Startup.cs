@@ -8,7 +8,6 @@ using Microsoft.OpenApi.Models;
 using UrlScraper.Api.BackgroundServices;
 using UrlScraper.Api.Options;
 using UrlScraper.Data.Repository;
-using UrlScraper.Shared;
 using UrlScraper.Shared.Options;
 using UrlScraper.Shared.SqsQueue;
 

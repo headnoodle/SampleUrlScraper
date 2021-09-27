@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using UrlScraper.Api.Models;
 using UrlScraper.Api.Options;
 using UrlScraper.Data.Repository;
-using UrlScraper.Shared;
 using UrlScraper.Shared.Models;
 using UrlScraper.Shared.SqsQueue;
 
@@ -92,7 +91,7 @@ namespace UrlScraper.Api.Controllers
                 var successfulScrape = _urlScraperRepository.GetScraperResultForToken(token);
 
                 if (successfulScrape != null)
-                    return new StandardResponse<UrlScrapeResultResponse>(){ Successful  = true, Payload = new UrlScrapeResultResponse(){ScrapeResults = successfulScrape.ResultData, Token = successfulScrape.ScrapeRequestId}};
+                    return new StandardResponse<UrlScrapeResultResponse>(){ Successful  = true, Payload = new UrlScrapeResultResponse(){ScrapeResults = successfulScrape.ResultData}};
 
                 return StandardResponseError<UrlScrapeResultResponse>("Scrape result not found", 4);
             }
