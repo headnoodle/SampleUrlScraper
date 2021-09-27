@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using UrlScraper.Data.Models;
 
 namespace UrlScraper.Data
@@ -13,6 +14,9 @@ namespace UrlScraper.Data
 
         private static DbContextOptions GetOptions(string connectionString)
         {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new NullReferenceException(nameof(connectionString));
+
             return new DbContextOptionsBuilder().UseSqlServer(connectionString).Options;
         }
 

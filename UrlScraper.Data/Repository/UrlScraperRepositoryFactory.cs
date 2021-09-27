@@ -1,18 +1,22 @@
-﻿namespace UrlScraper.Data.Repository
+﻿using System;
+
+namespace UrlScraper.Data.Repository
 {
     public class UrlScraperRepositoryFactory : IUrlScraperRepositoryFactory
     {
         private readonly string _connectionstring;
 
-        public UrlScraperRepositoryFactory(string connectionstring)
+        public UrlScraperRepositoryFactory(string connectionString)
         {
-            _connectionstring = connectionstring;
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentNullException(nameof(connectionString));
+
+            _connectionstring = connectionString;
         }
 
         public IUrlScraperRepository Create()
         {
             return new UrlScraperRepository(new ScraperDbContext(_connectionstring));
-            //return new UrlScraperRepository(new ScraperDbContext());
         }
     }
 }

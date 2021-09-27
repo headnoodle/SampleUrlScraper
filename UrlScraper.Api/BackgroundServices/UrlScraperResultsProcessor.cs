@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using UrlScraper.Data.Repository;
 using UrlScraper.Shared;
 using UrlScraper.Shared.Models;
+using UrlScraper.Shared.SqsQueue;
 
 namespace UrlScraper.Api.BackgroundServices
 {
@@ -21,20 +22,27 @@ namespace UrlScraper.Api.BackgroundServices
 
         public UrlScraperResultsProcessor(ILogger<UrlScraperResultsProcessor> logger, ISqsQueue resultsQueue, IUrlScraperRepositoryFactory scraperRepositoryFactory)
         {
-            _logger = logger;
-            _resultsQueue = resultsQueue;
-            _scraperRepository = scraperRepositoryFactory.Create();
+            _logger = logger?? throw new ArgumentNullException(nameof(logger));
+            _resultsQueue = resultsQueue?? throw new ArgumentNullException(nameof(resultsQueue));
+            _scraperRepository = scraperRepositoryFactory?.Create()?? throw  new ArgumentNullException(nameof(resultsQueue));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var response = await GetMessageFromQueue(stoppingToken);
+                try
+                {
+                    var response = await GetMessageFromQueue(stoppingToken);
 
-                if (isMessageAvailable(response))
-                    foreach (var message in response.Messages)
-                        await ProcessMessage(stoppingToken, message);
+                    if (isMessageAvailable(response))
+                        foreach (var message in response.Messages)
+                            await ProcessMessage(stoppingToken, message);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Problem processing result message");
+                }
             }
         }
 

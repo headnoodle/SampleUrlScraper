@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -9,7 +10,7 @@ using Amazon.SQS.Model;
 using Microsoft.Extensions.Logging;
 using UrlScraper.Shared.Options;
 
-namespace UrlScraper.Shared
+namespace UrlScraper.Shared.SqsQueue
 {
     public class SqsQueue : ISqsQueue
     {
@@ -19,8 +20,8 @@ namespace UrlScraper.Shared
 
         public SqsQueue(ILogger<SqsQueue> logger, SqsConfigurator configOptions)
         {
-            _logger = logger;
-            _configOptions = configOptions;
+            _logger = logger?? throw new NullReferenceException(nameof(logger));
+            _configOptions = configOptions?? throw new NullReferenceException(nameof(configOptions));
         }
         
         public async Task<bool> DeleteMessageAsync(Message message,  CancellationToken stoppingToken)

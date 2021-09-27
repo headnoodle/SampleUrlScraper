@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using UrlScraper.Shared.Options;
 
-namespace UrlScraper.Shared
+namespace UrlScraper.Shared.SqsQueue
 {
     public class SqsQueueFactory
     {
@@ -9,7 +10,7 @@ namespace UrlScraper.Shared
 
         public SqsQueueFactory(ILogger<SqsQueue> logger)
         {
-            _logger = logger;
+            _logger = logger??throw new ArgumentNullException(nameof(logger));
         }
 
         public ISqsQueue CreateQueue(SqsConfigurator configuration)

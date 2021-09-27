@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using UrlScraper.Processor.ScrapeRequestProcessors;
 using UrlScraper.Shared;
 using UrlScraper.Shared.Models;
+using UrlScraper.Shared.SqsQueue;
 
 namespace UrlScraper.Processor.BackgroundServices
 {
@@ -22,32 +24,49 @@ namespace UrlScraper.Processor.BackgroundServices
 
         public UrlScraperService(ILogger<UrlScraperService> logger, ISqsQueue scraperRequestQueue, ISqsQueue scraperResultsQueue, IScrapeRequestProcessorFactory scrapeRequestProcessorFactory)
         {
-            _logger = logger;
-            _scraperRequestQueue = scraperRequestQueue;
-            _scraperResultsQueue = scraperResultsQueue;
-            _scrapeRequestProcessorFactory = scrapeRequestProcessorFactory;
+            _logger = logger??throw new ArgumentNullException(nameof(logger));
+            _scraperRequestQueue = scraperRequestQueue?? throw new ArgumentNullException(nameof(scraperRequestQueue));
+            _scraperResultsQueue = scraperResultsQueue?? throw new ArgumentNullException(nameof(scraperResultsQueue));
+            _scrapeRequestProcessorFactory = scrapeRequestProcessorFactory??throw new ArgumentNullException(nameof(scrapeRequestProcessorFactory));
         }
-        
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                var response = await _scraperRequestQueue.ReceiveMessageResponse(1, 20, stoppingToken);
-
-                if (isMessageResponseSuccessful(response))
+                try
                 {
-                    foreach (var message in response.Messages)
-                    {
-                        var request = JsonSerializer.Deserialize<QueueUrlScrapeRequest>(message.Body);
-                        LogPickupMessage(message);
-                        var result = await ProcessScrapeRequest(request, stoppingToken);
-                        var resultJson = JsonSerializer.Serialize(result);
+                    var response = await _scraperRequestQueue.ReceiveMessageResponse(1, 20, stoppingToken);
 
-                        if (await AddResultsToResponseQueue(resultJson, stoppingToken))
-                            await _scraperRequestQueue.DeleteMessageAsync(message, stoppingToken);
+                    if (isMessageResponseSuccessful(response))
+                    {
+                        foreach (var message in response.Messages)
+                        {
+                            try
+                            {
+                                var request = JsonSerializer.Deserialize<QueueUrlScrapeRequest>(message.Body);
+                                LogPickupMessage(message);
+                                var result = await ProcessScrapeRequest(request, stoppingToken);
+                                var resultJson = JsonSerializer.Serialize(result);
+
+                                if (await AddResultsToResponseQueue(resultJson, stoppingToken))
+                                    await _scraperRequestQueue.DeleteMessageAsync(message, stoppingToken);
+                            }
+                            catch (Exception e)
+                            {
+                                _logger.LogError(e, "Problem processing message from queue");
+                            }
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Problem getting message from queue");
+                }
+
+                
+
+
             }
         }
 
@@ -76,7 +95,6 @@ namespace UrlScraper.Processor.BackgroundServices
             return scrapeResult;
 
         }
-
 
         private bool isMessageResponseSuccessful(ReceiveMessageResponse response)
         {

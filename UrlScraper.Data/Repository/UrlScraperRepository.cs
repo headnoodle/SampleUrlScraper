@@ -13,7 +13,7 @@ namespace UrlScraper.Data.Repository
 
         public UrlScraperRepository(ScraperDbContext dbContext)
         {
-            _dbContext = dbContext;
+            _dbContext = dbContext?? throw new ArgumentNullException(nameof(dbContext));
         }
         public IEnumerable<ScrapeRequest> GetAllRequests()
         {

@@ -11,6 +11,7 @@ using UrlScraper.Api.Options;
 using UrlScraper.Data.Repository;
 using UrlScraper.Shared;
 using UrlScraper.Shared.Models;
+using UrlScraper.Shared.SqsQueue;
 
 namespace UrlScraper.Api.Controllers
 {
@@ -26,10 +27,10 @@ namespace UrlScraper.Api.Controllers
 
         public UrlScraperController(ILogger<UrlScraperController> logger, QueueOptions queueOptions, SqsQueueFactory queueFactory, IUrlScraperRepositoryFactory urlScraperFactory)
         {
-            _logger = logger;
-            _queueOptions = queueOptions;
-            _queueFactory = queueFactory;
-            _urlScraperRepository = urlScraperFactory.Create();
+            _logger = logger??throw new ArgumentNullException(nameof(logger));
+            _queueOptions = queueOptions??throw new ArgumentNullException(nameof(queueOptions));
+            _queueFactory = queueFactory??throw new ArgumentNullException(nameof(queueFactory));
+            _urlScraperRepository = urlScraperFactory.Create()??throw new ArgumentNullException(nameof(urlScraperFactory));
         }
 
         [HttpPost("RequestUrlScrape")]

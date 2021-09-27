@@ -10,6 +10,7 @@ using UrlScraper.Api.Options;
 using UrlScraper.Data.Repository;
 using UrlScraper.Shared;
 using UrlScraper.Shared.Options;
+using UrlScraper.Shared.SqsQueue;
 
 namespace UrlScraper.Api
 {

@@ -7,6 +7,7 @@ using UrlScraper.Processor.BackgroundServices;
 using UrlScraper.Processor.ScrapeRequestProcessors;
 using UrlScraper.Shared;
 using UrlScraper.Shared.Options;
+using UrlScraper.Shared.SqsQueue;
 
 
 namespace UrlScraper.Processor

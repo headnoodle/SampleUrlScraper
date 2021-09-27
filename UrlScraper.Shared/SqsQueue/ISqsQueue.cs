@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS.Model;
 
-namespace UrlScraper.Shared
+namespace UrlScraper.Shared.SqsQueue
 {
     public interface ISqsQueue
     {
