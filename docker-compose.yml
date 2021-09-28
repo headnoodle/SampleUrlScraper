@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  urlscraper.api:
+    image: ${DOCKER_REGISTRY-}urlscraperapi
+    build:
+      context: .
+      dockerfile: UrlScraper.Api/Dockerfile
+    ports:
+      - "8080:80"
+
+  urlscraper.processor:
+    image: ${DOCKER_REGISTRY-}urlscraperprocessor
+    build:
+      context: .
+      dockerfile: UrlScraper.Processor/Dockerfile
+
