@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>dotnet-UrlScraper.Processor-E1C00752-CBF4-4A62-B63E-FB0E51AD32B1</UserSecretsId>
+    <Authors>Dean Wilson</Authors>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.1.14" />
+    <PackageReference Include="LoremNET" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UrlScraper.Shared\UrlScraper.Shared.csproj" />
+  </ItemGroup>
+</Project>
