@@ -16,10 +16,10 @@ Navigate to http://localhost:8080/swagger/index.html
 
 Horizontal Scaling
 ------------------
-As this is a queue based system the UrlScraper processor can be scaled by running more instances.
-UrlScraper API can be scaled by putting behind a load balancer and firing up more instances of the API.
+As this is a queue based system, the UrlScraper processor can be scaled by running more instances.
+UrlScraper API can be scaled by putting it behind a load balancer and firing up more instances of the API.
 
 Other Notes
 -----------
 
-The queues are configured support a dead letter queue to put messages that have been taken but have not been deleted after multiple attempts.
+The queues are configured to support a dead letter queue to put messages that have been taken but have not been deleted after multiple attempts.
